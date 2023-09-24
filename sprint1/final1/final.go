@@ -1,6 +1,6 @@
 package main
 
-//91172060
+//91266065
 // proc O(2*N)
 // mem O(N) если все участки пустые
 
@@ -54,6 +54,34 @@ func main() {
 }
 
 func solver(n int, arr []int, pos []int) []int {
+	for i, cur := range pos {
+		next := len(arr)
+		middle := next
+		if i < len(pos)-1 {
+			next = pos[i+1]
+			middle = int(math.Ceil(float64(next-cur)/2.0)) + cur - 1
+		}
+		l := 0
+		if i == 0 && pos[0] > 0 {
+			for j := cur - 1; j >= 0; j-- {
+				arr[j] = cur - j
+			}
+		}
+		if cur < next {
+			for j := cur + 1; j < next; j++ {
+				if j <= middle {
+					l += 1
+					arr[j] = l
+				} else {
+					arr[j] = next - j
+				}
+			}
+		}
+	}
+	return arr
+}
+
+func oldSolver(n int, arr []int, pos []int) []int {
 	out := make([]int, n)
 	cur := makeCursor(pos)
 	p := 0
@@ -76,7 +104,6 @@ func solver(n int, arr []int, pos []int) []int {
 			}
 			next, _ := cur.next()
 			middle := int(math.Ceil(float64(next-cur.cur())/2.0)) + cur.cur() - 1
-			//fmt.Printf("bool %v i: %v cur: %v next: %v middle: %v\n", i <= middle, i, cur.cur(), next, middle)
 			if i <= middle {
 				p += 1
 				out[i] = p

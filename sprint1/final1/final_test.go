@@ -57,7 +57,7 @@ func Test_solver(t *testing.T) {
 			args{
 				3,
 				[]int{0, 0, 1},
-				[]int{0, 0},
+				[]int{0, 1},
 			},
 			[]int{0, 0, 1},
 		},
@@ -78,6 +78,15 @@ func Test_solver(t *testing.T) {
 				[]int{1, 4, 7},
 			},
 			[]int{1, 0, 1, 1, 0, 1, 1, 0, 1},
+		},
+		{
+			"test 8",
+			args{
+				9,
+				[]int{98, 11, 10, 77, 0, 59, 28, 9, 94},
+				[]int{4},
+			},
+			[]int{4, 3, 2, 1, 0, 1, 2, 3, 4},
 		},
 	}
 	for _, tt := range tests {
