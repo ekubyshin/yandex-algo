@@ -1,6 +1,6 @@
 package main
 
-//91221240
+//91221681
 // proc O(N*M+9) N - кол-во строк M - кол-во столбцов
 // mem O(9) ну по сути O(1) константа
 
@@ -35,9 +35,14 @@ func readArray() []int {
 	max := rows * cols
 	m := make([]int, 10)
 	i := 0
+	j := 0
 	for i < max {
 		if b, ok := reader.ReadByte(); ok == nil {
 			if b == 10 {
+				j++
+				if j == rows {
+					break
+				}
 				continue
 			}
 			num := 0
