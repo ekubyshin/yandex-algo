@@ -1,6 +1,8 @@
 package main
 
 //91172060
+// proc O(2*N)
+// mem O(N) если все участки пустые
 
 import (
 	"bufio"
