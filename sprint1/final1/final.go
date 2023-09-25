@@ -1,49 +1,16 @@
 package main
 
-//91266065
+//91336495
 // proc O(2*N)
 // mem O(N) если все участки пустые
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"math"
 	"os"
 	"strconv"
 )
-
-type cursor struct {
-	pos  []int
-	iter int
-}
-
-func makeCursor(arr []int) cursor {
-	return cursor{pos: arr, iter: 0}
-}
-
-func (p *cursor) cur() int {
-	return p.pos[p.iter]
-}
-
-func (p *cursor) hasNext() bool {
-	return p.iter < len(p.pos)-1
-}
-
-func (p *cursor) next() (int, error) {
-	if p.hasNext() {
-		return p.pos[p.iter+1], nil
-	}
-	return 0, errors.New("no elem")
-}
-
-func (p *cursor) move() (int, error) {
-	if p.hasNext() {
-		p.iter += 1
-		return p.pos[p.iter], nil
-	}
-	return 0, errors.New("no elem")
-}
 
 func main() {
 	var n int
@@ -54,44 +21,41 @@ func main() {
 }
 
 func solver(n int, arr []int, pos []int) []int {
-	out := make([]int, n)
-	cur := makeCursor(pos)
-	p := 0
-	for i, v := range arr {
-		if v == 0 {
-			out[i] = 0
-			if cur.hasNext() {
-				next, _ := cur.next()
-				if i == next {
-					cur.move()
-				}
-			}
-			p = 0
-			continue
-		}
-		if i <= cur.cur() || cur.hasNext() {
-			if i < cur.cur() {
-				out[i] = cur.cur() - i
-				continue
-			}
-			next, _ := cur.next()
-			middle := int(math.Ceil(float64(next-cur.cur())/2.0)) + cur.cur() - 1
-			if i <= middle {
-				p += 1
-				out[i] = p
-			} else {
-				out[i] = next - i
-			}
-			if i == next || i <= cur.cur() {
-				cur.move()
-				p = 0
-			}
-		} else {
-			p += 1
-			out[i] = p
+	first := pos[0]
+	if first > 0 {
+		for i := first - 1; i >= 0; i-- {
+			arr[i] = first - i
 		}
 	}
-	return out
+
+	last := pos[len(pos)-1]
+	if last < len(arr)-1 {
+		for i := last + 1; i < len(arr); i++ {
+			arr[i] = i - last
+		}
+	}
+
+	for i, cur := range pos {
+		next := last
+		middle := next
+		if i < len(pos)-1 {
+			next = pos[i+1]
+			middle = int(math.Ceil(float64(next-cur)/2.0)) + cur - 1
+		}
+		l := 0
+		if cur >= next {
+			continue
+		}
+		for j := cur + 1; j < next; j++ {
+			if j <= middle {
+				l += 1
+				arr[j] = l
+			} else {
+				arr[j] = next - j
+			}
+		}
+	}
+	return arr
 }
 
 func makeScanner() *bufio.Scanner {
