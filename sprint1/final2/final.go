@@ -1,11 +1,12 @@
 package main
 
-//91221681
+//91290012
 // proc O(N*M+9) N - кол-во строк M - кол-во столбцов
 // mem O(9) ну по сути O(1) константа
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -34,26 +35,40 @@ func readArray() []int {
 	reader := bufio.NewReader(os.Stdin)
 	max := rows * cols
 	m := make([]int, 10)
-	i := 0
-	j := 0
-	for i < max {
+	for i := 0; i < max+rows; i++ {
 		if b, ok := reader.ReadByte(); ok == nil {
-			if b == 10 {
-				j++
-				if j == rows {
-					break
-				}
-				continue
-			}
-			num := 0
-			if b >= '1' && b <= '9' {
-				num, _ = strconv.Atoi(string(b))
+			num, err := getInt(b)
+			if err == nil {
 				m[num] += 1
 			}
-			i += 1
 		} else {
 			break
 		}
 	}
 	return m
+}
+
+func getInt(b byte) (int, error) {
+	if b == 10 {
+		return 0, NewLineEnded()
+	}
+	if b >= '1' && b <= '9' {
+		num, err := strconv.Atoi(string(b))
+		if err == nil {
+			return num, nil
+		}
+	}
+	return 0, NewNotANumber()
+}
+
+type LineEnded error
+
+type NotANumber error
+
+func NewLineEnded() LineEnded {
+	return errors.New("line is ended")
+}
+
+func NewNotANumber() error {
+	return errors.New("not a number")
 }

@@ -54,34 +54,6 @@ func main() {
 }
 
 func solver(n int, arr []int, pos []int) []int {
-	for i, cur := range pos {
-		next := len(arr)
-		middle := next
-		if i < len(pos)-1 {
-			next = pos[i+1]
-			middle = int(math.Ceil(float64(next-cur)/2.0)) + cur - 1
-		}
-		l := 0
-		if i == 0 && pos[0] > 0 {
-			for j := cur - 1; j >= 0; j-- {
-				arr[j] = cur - j
-			}
-		}
-		if cur < next {
-			for j := cur + 1; j < next; j++ {
-				if j <= middle {
-					l += 1
-					arr[j] = l
-				} else {
-					arr[j] = next - j
-				}
-			}
-		}
-	}
-	return arr
-}
-
-func oldSolver(n int, arr []int, pos []int) []int {
 	out := make([]int, n)
 	cur := makeCursor(pos)
 	p := 0
