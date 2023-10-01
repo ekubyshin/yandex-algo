@@ -1,13 +1,12 @@
 package main
 
-//91336495
+//91744373
 // proc O(2*N)
 // mem O(N) если все участки пустые
 
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 )
@@ -21,37 +20,23 @@ func main() {
 }
 
 func solver(n int, arr []int, pos []int) []int {
-	first := pos[0]
-	if first > 0 {
-		for i := first - 1; i >= 0; i-- {
-			arr[i] = first - i
-		}
+	prev := 0
+	next := 1
+	if len(pos) == 1 {
+		next = 0
 	}
-
-	last := pos[len(pos)-1]
-	if last < len(arr)-1 {
-		for i := last + 1; i < len(arr); i++ {
-			arr[i] = i - last
-		}
-	}
-
-	for i, cur := range pos {
-		next := last
-		middle := next
-		if i < len(pos)-1 {
-			next = pos[i+1]
-			middle = int(math.Ceil(float64(next-cur)/2.0)) + cur - 1
-		}
-		l := 0
-		if cur >= next {
-			continue
-		}
-		for j := cur + 1; j < next; j++ {
-			if j <= middle {
-				l += 1
-				arr[j] = l
-			} else {
-				arr[j] = next - j
+	for i := 0; i < len(arr); i++ {
+		if i > pos[prev] && i < pos[next] {
+			arr[i] = min(i-pos[prev], pos[next]-i)
+		} else if i > pos[next] {
+			arr[i] = i - pos[next]
+		} else if i < pos[prev] {
+			arr[i] = pos[prev] - i
+		} else if i == pos[next] {
+			arr[i] = 0
+			prev = next
+			if next+1 < len(pos) {
+				next += 1
 			}
 		}
 	}
