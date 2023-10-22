@@ -50,7 +50,7 @@ func (q *Queue) Peek() (int, error) {
 	if q.IsEmpty() {
 		return 0, errors.New("empty queue")
 	}
-	return q.queue[q.tail], nil
+	return q.queue[q.head], nil
 }
 
 func (q *Queue) Pop() (int, error) {
@@ -77,7 +77,7 @@ func main() {
 		scanner.Scan()
 		cmd := scanner.Text()
 		if s := handleCommand(cmd, queue); s != "" {
-			writer.WriteString(handleCommand(cmd, queue))
+			writer.WriteString(s)
 			if cmds > 1 {
 				writer.WriteString("\n")
 			}
