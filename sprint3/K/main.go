@@ -23,7 +23,7 @@ package main
 import "reflect"
 
 func merge_sort(arr []int, lf int, rg int) {
-	if rg-lf < 2 {
+	if len(arr) == 1 || rg-lf <= 1 {
 		return
 	}
 	mid := (rg + lf) / 2
