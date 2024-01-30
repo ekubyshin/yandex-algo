@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -106,6 +109,40 @@ func Test_quicksortint(t *testing.T) {
 				return -1
 			})
 			assert.Equal(t, tt.want, tt.args)
+		})
+	}
+}
+
+func Test_readCompetitors(t *testing.T) {
+	type args struct {
+		reader *bufio.Reader
+		num    int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			"a",
+			args{
+				bufio.NewReader(bytes.NewReader([]byte(`alla 4 100
+				gena 6 1000
+				gosha 2 90
+				rita 2 90
+				timofey 4 80`))),
+				5,
+			},
+			5,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := readCompetitors(tt.args.reader, tt.args.num)
+			assert.Len(t, r, tt.want)
+			for _, l := range r {
+				fmt.Println(l)
+			}
 		})
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 /*
@@ -26,6 +27,7 @@ import (
 На рисунке представлен пример разделения при pivot=5. Указатель left — голубой, right — оранжевый.
 
 Решение:
+106253069
 CPU O(nlogn)
 Mem O(1)
 
@@ -36,6 +38,9 @@ Mem O(1)
 Данная функция сравнения, будет использоваться для расстановки участников слева или справа
 Также добавлю два вспомогательных метода readCompetitors - читает из stdin и возвращает массив участников
 writeResults - выводит результаты в stdout. Ввод и вывод буферизованные.
+
+красивое чтение сделать не получилось, тк scanner не укладывался по памяти либо по времени.
+Поэтому сделал уродское чтение по байтам
 */
 
 type Competitor struct {
@@ -67,6 +72,7 @@ func main() {
 	var num int
 	fmt.Scanf("%d", &num)
 	reader := bufio.NewReader(os.Stdin)
+	reader.Reset(reader)
 	competitors := readCompetitors(reader, num)
 	quicksort(competitors, Compare)
 	printResult(competitors)
@@ -74,15 +80,54 @@ func main() {
 
 func readCompetitors(reader *bufio.Reader, num int) []Competitor {
 	competitors := make([]Competitor, num)
-	for i := 0; i < num; i++ {
-		var name []byte
-		var score int
-		var penalty int
-		fmt.Scanf("%s %d %d", &name, &score, &penalty)
-		competitors[i] = Competitor{
-			name,
-			score,
-			penalty,
+	i := 0
+	scorebytes := make([]byte, 0, 10)
+	penaltybytes := make([]byte, 0, 10)
+	name := make([]byte, 0, 10)
+	scoreCompleted := false
+	for {
+		if b, ok := reader.ReadByte(); ok == nil {
+			if b >= 'a' && b <= 'z' {
+				name = append(name, b)
+				continue
+			}
+			if b == ' ' {
+				if len(name) > 0 && len(scorebytes) > 0 {
+					scoreCompleted = true
+				}
+				continue
+			}
+			if b >= '0' && b <= '9' {
+				if !scoreCompleted {
+					scorebytes = append(scorebytes, b)
+				} else {
+					penaltybytes = append(penaltybytes, b)
+				}
+			}
+			if b == 10 {
+				score, _ := strconv.Atoi(string(scorebytes))
+				penalty, _ := strconv.Atoi(string(penaltybytes))
+				competitors[i] = Competitor{
+					name,
+					score,
+					penalty,
+				}
+				scorebytes = make([]byte, 0, 10)
+				penaltybytes = make([]byte, 0, 10)
+				name = make([]byte, 0, 10)
+				i += 1
+				scoreCompleted = false
+				continue
+			}
+		} else {
+			score, _ := strconv.Atoi(string(scorebytes))
+			penalty, _ := strconv.Atoi(string(penaltybytes))
+			competitors[i] = Competitor{
+				name,
+				score,
+				penalty,
+			}
+			break
 		}
 	}
 	return competitors
