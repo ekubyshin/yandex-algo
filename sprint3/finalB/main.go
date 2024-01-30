@@ -93,7 +93,7 @@ func printResult(competitors []Competitor) {
 	for i := 0; i < len(competitors); i++ {
 		writer.Write(competitors[i].Name)
 		if i != len(competitors)-1 {
-			writer.WriteString("\n")
+			writer.WriteByte('\n')
 		}
 	}
 	writer.Flush()
