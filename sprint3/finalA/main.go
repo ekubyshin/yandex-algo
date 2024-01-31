@@ -8,9 +8,9 @@ package main
 От вас требуется реализовать функцию, осуществляющую поиск в сломанном массиве. Обратите внимание, что считывать данные и выводить ответ не требуется.
 Функция должна вернуть номер элемента массива, не изменяя сам массив.
 
-Решение 105894604
+Решение 106303438
 CPU O(logn)
-Mem O(1) - дополнительная память не требуется
+Mem O(1) - дополнительная память не требуется, slice указывается всегда на 1 массив
 
 По факту это тот же алгоритм бинарного поиска, только с проверкой границ left и right, чтобы элемент точно лежал в этих границах.
 Возможные кейсы вхождения элемента в левой части
@@ -20,26 +20,27 @@ Mem O(1) - дополнительная память не требуется
 В противном случаем, мы попадаем в кейс,  когда надо искать в левой части
 */
 
-func brokenSearch(arr []int, k int) int {
-	return binarySearch(arr, k, 0, len(arr))
-}
-
-func binarySearch(arr []int, target int, left int, right int) int {
-	if right <= left {
-		return -1
-	}
-	mid := (left + right) / 2
-	if arr[mid] == target {
-		return mid
-	}
-	if arr[left] < arr[mid] {
-		if arr[left] <= target && target < arr[mid] {
-			return binarySearch(arr, target, left, mid)
+func brokenSearch(arr []int, target int) int {
+	left := 0
+	right := len(arr)
+	for left < right {
+		mid := (left + right) / 2
+		if arr[mid] == target {
+			return mid
 		}
-		return binarySearch(arr, target, mid+1, right)
+		if arr[left] < arr[mid] {
+			if arr[left] <= target && target < arr[mid] {
+				right = mid
+			} else {
+				left = mid + 1
+			}
+			continue
+		}
+		if arr[mid] < target && target <= arr[right-1] {
+			left = mid + 1
+		} else {
+			right = mid
+		}
 	}
-	if arr[mid] < target && target <= arr[right-1] {
-		return binarySearch(arr, target, mid+1, right)
-	}
-	return binarySearch(arr, target, left, mid)
+	return -1
 }

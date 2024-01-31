@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
 	"testing"
 
@@ -19,54 +17,54 @@ func Test_quicksort(t *testing.T) {
 			"0",
 			[]Competitor{
 				{
-					[]byte("alla"),
+					"alla",
 					4,
 					100,
 				},
 				{
-					[]byte("gena"),
+					"gena",
 					6,
 					1000,
 				},
 				{
-					[]byte("gosha"),
+					"gosha",
 					2,
 					90,
 				},
 				{
-					[]byte("rita"),
+					"rita",
 					2,
 					90,
 				},
 				{
-					[]byte("timofey"),
+					"timofey",
 					4,
 					80,
 				},
 			},
 			[]Competitor{
 				{
-					[]byte("gena"),
+					"gena",
 					6,
 					1000,
 				},
 				{
-					[]byte("timofey"),
+					"timofey",
 					4,
 					80,
 				},
 				{
-					[]byte("alla"),
+					"alla",
 					4,
 					100,
 				},
 				{
-					[]byte("gosha"),
+					"gosha",
 					2,
 					90,
 				},
 				{
-					[]byte("rita"),
+					"rita",
 					2,
 					90,
 				},
@@ -114,31 +112,18 @@ func Test_quicksortint(t *testing.T) {
 }
 
 func Test_readCompetitors(t *testing.T) {
-	type args struct {
-		reader *bufio.Reader
-		num    int
-	}
 	tests := []struct {
 		name string
-		args args
 		want int
 	}{
 		{
 			"a",
-			args{
-				bufio.NewReader(bytes.NewReader([]byte(`alla 4 100
-				gena 6 1000
-				gosha 2 90
-				rita 2 90
-				timofey 4 80`))),
-				5,
-			},
 			5,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := readCompetitors(tt.args.reader, tt.args.num)
+			r := read()
 			assert.Len(t, r, tt.want)
 			for _, l := range r {
 				fmt.Println(l)

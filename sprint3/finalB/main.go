@@ -2,10 +2,9 @@ package main
 
 import (
 	"bufio"
-	"bytes"
-	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 /*
@@ -27,9 +26,9 @@ import (
 На рисунке представлен пример разделения при pivot=5. Указатель left — голубой, right — оранжевый.
 
 Решение:
-106253069
+106305382
 CPU O(nlogn)
-Mem O(1)
+Mem O(n) - тут будет заполняться стэк каждого вызова изза рекурсии с выделением локальных переменных
 
 Реализую структуру Competitor, которая будет содержать три поля Имя участника, его очки и размер штрафа
 Далее для Competitor реализую метод Compare, который будет сравнивать одного участника с другим.
@@ -44,7 +43,7 @@ writeResults - выводит результаты в stdout. Ввод и выв
 */
 
 type Competitor struct {
-	Name    []byte
+	Name    string
 	Score   int
 	Penalty int
 }
@@ -58,7 +57,7 @@ func (c Competitor) Compare(b Competitor) int {
 			return 1
 		}
 		if c.Penalty == b.Penalty {
-			return bytes.Compare(b.Name, c.Name)
+			return strings.Compare(b.Name, c.Name)
 		}
 	}
 	return -1
@@ -69,65 +68,24 @@ func Compare(a Competitor, b Competitor) int {
 }
 
 func main() {
-	var num int
-	fmt.Scanf("%d", &num)
-	reader := bufio.NewReader(os.Stdin)
-	reader.Reset(reader)
-	competitors := readCompetitors(reader, num)
+	competitors := read()
 	quicksort(competitors, Compare)
 	printResult(competitors)
 }
 
-func readCompetitors(reader *bufio.Reader, num int) []Competitor {
-	competitors := make([]Competitor, num)
-	i := 0
-	scorebytes := make([]byte, 0, 10)
-	penaltybytes := make([]byte, 0, 10)
-	name := make([]byte, 0, 10)
-	scoreCompleted := false
-	for {
-		if b, ok := reader.ReadByte(); ok == nil {
-			if b >= 'a' && b <= 'z' {
-				name = append(name, b)
-				continue
-			}
-			if b == ' ' {
-				if len(name) > 0 && len(scorebytes) > 0 {
-					scoreCompleted = true
-				}
-				continue
-			}
-			if b >= '0' && b <= '9' {
-				if !scoreCompleted {
-					scorebytes = append(scorebytes, b)
-				} else {
-					penaltybytes = append(penaltybytes, b)
-				}
-			}
-			if b == 10 {
-				score, _ := strconv.Atoi(string(scorebytes))
-				penalty, _ := strconv.Atoi(string(penaltybytes))
-				competitors[i] = Competitor{
-					name,
-					score,
-					penalty,
-				}
-				scorebytes = make([]byte, 0, 10)
-				penaltybytes = make([]byte, 0, 10)
-				name = make([]byte, 0, 10)
-				i += 1
-				scoreCompleted = false
-				continue
-			}
-		} else {
-			score, _ := strconv.Atoi(string(scorebytes))
-			penalty, _ := strconv.Atoi(string(penaltybytes))
-			competitors[i] = Competitor{
-				name,
-				score,
-				penalty,
-			}
-			break
+func read() []Competitor {
+	data, _ := os.ReadFile("./input.txt")
+	dataArray := strings.Split(string(data), "\n")
+	count, _ := strconv.Atoi(dataArray[0])
+	competitors := make([]Competitor, count)
+	for i, dataLine := range dataArray[1:] {
+		line := strings.Split(dataLine, " ")
+		score, _ := strconv.Atoi(line[1])
+		penalty, _ := strconv.Atoi(line[2])
+		competitors[i] = Competitor{
+			line[0],
+			score,
+			penalty,
 		}
 	}
 	return competitors
@@ -136,9 +94,9 @@ func readCompetitors(reader *bufio.Reader, num int) []Competitor {
 func printResult(competitors []Competitor) {
 	writer := bufio.NewWriter(os.Stdout)
 	for i := 0; i < len(competitors); i++ {
-		writer.Write(competitors[i].Name)
+		writer.WriteString(competitors[i].Name)
 		if i != len(competitors)-1 {
-			writer.WriteByte('\n')
+			writer.WriteString("\n")
 		}
 	}
 	writer.Flush()
@@ -167,17 +125,11 @@ func inplaceQuickSort[S ~[]E, E any](array S, left int, right int, cmp func(a, b
 			end -= 1
 		}
 		if start <= end {
-			swap(array, start, end)
+			array[start], array[end] = array[end], array[start]
 			start += 1
 			end -= 1
 		}
 	}
 	inplaceQuickSort(array, left, end, cmp)
 	inplaceQuickSort(array, start, right, cmp)
-}
-
-func swap[S ~[]E, E any](array S, left int, right int) {
-	tmp := array[left]
-	array[left] = array[right]
-	array[right] = tmp
 }
