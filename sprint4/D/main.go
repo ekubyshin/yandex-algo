@@ -56,6 +56,20 @@ func (o *OrderedMap[K, V]) Pairs() []Pair[K, V] {
 func main() {
 	var num int
 	fmt.Scanf("%d", &num)
+	sections := readSection(num)
+	writeResult(sections)
+}
+
+func writeResult(sections OrderedMap[string, struct{}]) {
+	writer := bufio.NewWriter(os.Stdout)
+	for _, v := range sections.Pairs() {
+		writer.WriteString(v.Key)
+		writer.WriteString("\n")
+	}
+	writer.Flush()
+}
+
+func readSection(num int) OrderedMap[string, struct{}] {
 	reader := bufio.NewReader(os.Stdin)
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
@@ -65,10 +79,5 @@ func main() {
 		name := scanner.Text()
 		sections.Put(name, struct{}{})
 	}
-	writer := bufio.NewWriter(os.Stdout)
-	for _, v := range sections.Pairs() {
-		writer.WriteString(v.Key)
-		writer.WriteString("\n")
-	}
-	writer.Flush()
+	return *sections
 }
